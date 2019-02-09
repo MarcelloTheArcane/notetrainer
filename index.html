@@ -1,0 +1,178 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sightreading</title>
+    <style>
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      #image-container {
+        background-image: url("./notes.PNG");
+        width: 58px;
+        height: 170px;
+      }
+
+      #button-container {
+        margin: 0.75rem;
+        display: flex;
+        justify-content: space-around;
+      }
+
+      #button-container > button {
+        padding: 0.75rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="image-container"></div>
+
+    <div id="button-container">
+      <button id="A" class="note-select" onclick="selectedNote('A')">A</button>
+      <button id="B" class="note-select" onclick="selectedNote('B')">B</button>
+      <button id="C" class="note-select" onclick="selectedNote('C')">C</button>
+      <button id="D" class="note-select" onclick="selectedNote('D')">D</button>
+      <button id="E" class="note-select" onclick="selectedNote('E')">E</button>
+      <button id="F" class="note-select" onclick="selectedNote('F')">F</button>
+      <button id="G" class="note-select" onclick="selectedNote('G')">G</button>
+    </div>
+
+    <div id="result-container">
+      <div id="result"></div>
+      <div id="time-to-respond"></div>
+      <span id="correct-percentage"></span>
+      <span id="average-response-time"></span>
+    </div>
+
+    <script>
+      let startTime = new Date()
+      let rightNotes = []
+      let wrongNotes = []
+      let totalResponseTime = 0
+
+      let currentNote = {
+        note: 'G3',
+        offset: 0
+      }
+
+      function selectedNote(selectedNote) {
+        if (selectedNote === currentNote.note[0]) {
+          rightNotes.push(currentNote)
+          document.getElementById('result').innerHTML = 'correct!'
+        } else {
+          wrongNotes.push(currentNote)
+          document.getElementById('result').innerHTML = 'wrong - the note was actually ' + currentNote.note
+        }
+
+        const endTime = new Date()
+        document.getElementById('time-to-respond').innerHTML = 'you answered in ' + humanDate(startTime, endTime)
+
+        document.getElementById('correct-percentage').innerHTML = Math.round((rightNotes.length / (rightNotes.length + wrongNotes.length)) * 100) + '% correct,'
+        document.getElementById('average-response-time').innerHTML = 'average answer in ' + humanDate(0, totalResponseTime / (rightNotes.length + wrongNotes.length))
+
+        setRandomNote()
+        return
+      }
+
+      function setRandomNote() {
+        const notes = [
+          {
+            note: 'G3',
+            offset: 0
+          },
+          {
+            note: 'A3',
+            offset: -54
+          },
+          {
+            note: 'B3',
+            offset: -106
+          },
+          {
+            note: 'C4',
+            offset: -159
+          },
+          {
+            note: 'D4',
+            offset: -211
+          },
+          {
+            note: 'E4',
+            offset: -263
+          },
+          {
+            note: 'F4',
+            offset: -316
+          },
+          {
+            note: 'G4',
+            offset: -369
+          },
+          {
+            note: 'A4',
+            offset: -422
+          },
+          {
+            note: 'B4',
+            offset: -473
+          },
+          {
+            note: 'C5',
+            offset: -526
+          },
+          {
+            note: 'D5',
+            offset: -579
+          },
+          {
+            note: 'E5',
+            offset: -632
+          },
+          {
+            note: 'F5',
+            offset: -685
+          },
+          {
+            note: 'G5',
+            offset: -737
+          },
+          {
+            note: 'A6',
+            offset: -790
+          },
+          {
+            note: 'B6',
+            offset: -844
+          },
+          {
+            note: 'C6',
+            offset: -897
+          },
+          {
+            note: 'D6',
+            offset: -951
+          }
+        ]
+        const newNote = notes[Math.floor(Math.random() * 18)]
+
+        startTime = new Date()
+        document.getElementById('image-container').style.backgroundPosition = newNote.offset + ' 0'
+        currentNote = newNote
+        return
+      }
+
+      function humanDate(start, end) {
+        totalResponseTime += (end - start)
+
+        const minutes = Math.floor(((end - start) / 1000) / 60)
+        const seconds = Math.floor(((end - start) / 1000) % 60)
+
+        return minutes ? `${minutes} minutes, ${seconds} seconds` : seconds + ' seconds'
+      }
+    </script>
+  </body>
+</html>
