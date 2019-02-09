@@ -4,80 +4,126 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Sightreading</title>
     <style>
+      #image {
+        background-image: url("./notes.PNG");
+        width: 58px;
+        height: 170px;
+        margin: 1rem;
+      }
+      
       body {
         display: flex;
         flex-direction: column;
         align-items: center;
+        user-select: none;
+        font-family: BlinkMacSystemFont,-apple-system,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Fira Sans","Droid Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+        margin: 0;
+        padding: 0;
       }
-
-      #image-container {
-        background-image: url("./notes.PNG");
-        width: 58px;
-        height: 170px;
+      
+      #result {
+        height: 8rem;
+        padding: 2rem 2rem 0 2rem;
+        margin: 0;
+        font-size: 1.75rem;
+        color: #fff;
+        width: 100%;
+        box-sizing: border-box;
       }
-
-      #button-container {
-        margin: 0.75rem;
+      #result-subtitle {
+        font-size: 1rem;
+      }
+      
+      .background-red {
+        background-color: hsl(348, 100%, 61%);
+      }
+      
+      .background-green {
+        background-color: hsl(141, 71%, 48%);
+      }
+      
+      .image-container {
+        width: 100%;
+        background-color: #f9f9f9;
         display: flex;
-        justify-content: space-around;
+        justify-content: center;
+        margin-bottom: 2rem;
       }
-
-      #button-container > button {
-        padding: 0.75rem;
+      
+      .button {
+        background-color: #363636;
+        border-color: transparent;
+        color: #f5f5f5;
+        cursor: pointer;
+        justify-content: center;
+        padding-bottom: calc(.375em - 1px);
+        padding-left: .75em;
+        padding-right: .75em;
+        padding-top: calc(.375em - 1px);
+        text-align: center;
+        white-space: nowrap;
+        border-width: 1px;
+        font-weight: 600!important;
+        -webkit-appearance: none;
+        align-items: center;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        box-shadow: none;
+        display: inline-flex;
+        font-size: 1rem;
+        height: 2.25em;
+        line-height: 1.5;
+        position: relative;
+        vertical-align: top;
+        margin: 0;
       }
     </style>
   </head>
 
   <body>
-    <div id="image-container"></div>
-
-    <div id="button-container">
-      <button id="A" class="note-select" onclick="selectedNote('A')">A</button>
-      <button id="B" class="note-select" onclick="selectedNote('B')">B</button>
-      <button id="C" class="note-select" onclick="selectedNote('C')">C</button>
-      <button id="D" class="note-select" onclick="selectedNote('D')">D</button>
-      <button id="E" class="note-select" onclick="selectedNote('E')">E</button>
-      <button id="F" class="note-select" onclick="selectedNote('F')">F</button>
-      <button id="G" class="note-select" onclick="selectedNote('G')">G</button>
+    <div id="result">
+      <div>
+        <div id="result-title"></div>
+        <div id="result-subtitle"></div>
+      </div>
     </div>
-
-    <div id="result-container">
-      <div id="result"></div>
-      <div id="time-to-respond"></div>
-      <span id="correct-percentage"></span>
-      <span id="average-response-time"></span>
+    
+    <div class="image-container">
+      <div id="image"></div>
     </div>
-
+    
+    <div>
+      <button id="A" class="button" onclick="selectedNote('A')">A</button>
+      <button id="B" class="button" onclick="selectedNote('B')">B</button>
+      <button id="C" class="button" onclick="selectedNote('C')">C</button>
+      <button id="D" class="button" onclick="selectedNote('D')">D</button>
+      <button id="E" class="button" onclick="selectedNote('E')">E</button>
+      <button id="F" class="button" onclick="selectedNote('F')">F</button>
+      <button id="G" class="button" onclick="selectedNote('G')">G</button>
+    </div>
+    
     <script>
-      let startTime = new Date()
-      let rightNotes = []
-      let wrongNotes = []
-      let totalResponseTime = 0
-
       let currentNote = {
         note: 'G3',
         offset: 0
       }
-
+      setRandomNote()
+      
       function selectedNote(selectedNote) {
         if (selectedNote === currentNote.note[0]) {
-          rightNotes.push(currentNote)
-          document.getElementById('result').innerHTML = 'correct!'
+          document.getElementById('result-title').innerHTML = 'Correct!'
+          document.getElementById('result-subtitle').innerHTML = ''
+          document.getElementById('result').className = 'section background-green'
         } else {
-          wrongNotes.push(currentNote)
-          document.getElementById('result').innerHTML = 'wrong - the note was actually ' + currentNote.note
+          document.getElementById('result-title').innerHTML = 'Wrong'
+          document.getElementById('result-subtitle').innerHTML = 'the note was actually ' + currentNote.note
+          document.getElementById('result').className = 'section background-red'
         }
-
-        const endTime = new Date()
-        document.getElementById('time-to-respond').innerHTML = 'you answered in ' + humanDate(startTime, endTime)
-
-        document.getElementById('correct-percentage').innerHTML = Math.round((rightNotes.length / (rightNotes.length + wrongNotes.length)) * 100) + '% correct,'
-        document.getElementById('average-response-time').innerHTML = 'average answer in ' + humanDate(0, totalResponseTime / (rightNotes.length + wrongNotes.length))
-
+        
         setRandomNote()
         return
       }
-
+      
       function setRandomNote() {
         const notes = [
           {
@@ -158,20 +204,10 @@
           }
         ]
         const newNote = notes[Math.floor(Math.random() * 18)]
-
-        startTime = new Date()
-        document.getElementById('image-container').style.backgroundPosition = newNote.offset + ' 0'
+        
+        document.getElementById('image').style.backgroundPosition = newNote.offset + ' 0'
         currentNote = newNote
         return
-      }
-
-      function humanDate(start, end) {
-        totalResponseTime += (end - start)
-
-        const minutes = Math.floor(((end - start) / 1000) / 60)
-        const seconds = Math.floor(((end - start) / 1000) % 60)
-
-        return minutes ? `${minutes} minutes, ${seconds} seconds` : seconds + ' seconds'
       }
     </script>
   </body>
